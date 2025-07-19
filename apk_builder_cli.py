@@ -1,27 +1,32 @@
-echo 'import typer
-from rich import print
+import typer
+from rich.console import Console
+from pathlib import Path
 import subprocess
-import os
 
 app = typer.Typer()
+console = Console()
 
 @app.command()
-def build(
-    url: str = typer.Option(..., prompt="🌐 WebView adresini girin (https ile)"),
-    name: str = typer.Option("WebVAPKApp", prompt="📦 Uygulama adı"),
-    package: str = typer.Option("com.example.webvapk", prompt="📦 Paket adı"),
-    icon_path: str = typer.Option("icon.png", prompt="🖼️ Uygulama ikonu (icon.png)")):
-    
-    print(f"🚀 [bold green]APK oluşturuluyor...[/bold green]")
-    os.makedirs("output", exist_ok=True)
-    with open("output/AndroidManifest.xml", "w") as f:
-        f.write(f"<manifest package=\"{package}\">\n<!-- ... --></manifest>")
-    print("[bold blue]✅ Dummy APK yapısı oluşturuldu (örnek). Gerçek üretim için build sistemine entegre edilecek.[/bold blue]")
+def build():
+    console.print("[bold green]✅ APK oluşturma işlemi başlatıldı...[/bold green]")
+
+    # 📁 build klasörü oluştur
+    build_dir = Path("build")
+    build_dir.mkdir(exist_ok=True)
+
+    # 📄 dummy bir manifest dosyası oluştur
+    manifest_file = build_dir / "AndroidManifest.xml"
+    manifest_file.write_text("<manifest><application/></manifest>")
+
+    # 📄 dummy bir kod dosyası
+    main_file = build_dir / "Main.java"
+    main_file.write_text("public class Main { public static void main(String[] args) { System.out.println(\"Hello APK\"); } }")
+
+    # 📦 APK dosyası taklidi (sadece zip uzantılı klasör)
+    apk_path = build_dir / "myapp.apk"
+    subprocess.run(["zip", "-r", str(apk_path), "."], cwd=build_dir)
+
+    console.print(f"[bold blue]📦 APK dosyası oluşturuldu:[/bold blue] {apk_path.resolve()}")
 
 if __name__ == "__main__":
-    app()' > ~/webvapk-boilerplate/test.txt && \
-cd ~/webvapk-boilerplate && \
-git add test.txt && \
-git commit -m "Update test.txt with apk_builder_cli.py logic" && \
-git push origin main
-
+    app()
