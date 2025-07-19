@@ -1,0 +1,27 @@
+echo 'import typer
+from rich import print
+import subprocess
+import os
+
+app = typer.Typer()
+
+@app.command()
+def build(
+    url: str = typer.Option(..., prompt="🌐 WebView adresini girin (https ile)"),
+    name: str = typer.Option("WebVAPKApp", prompt="📦 Uygulama adı"),
+    package: str = typer.Option("com.example.webvapk", prompt="📦 Paket adı"),
+    icon_path: str = typer.Option("icon.png", prompt="🖼️ Uygulama ikonu (icon.png)")):
+    
+    print(f"🚀 [bold green]APK oluşturuluyor...[/bold green]")
+    os.makedirs("output", exist_ok=True)
+    with open("output/AndroidManifest.xml", "w") as f:
+        f.write(f"<manifest package=\"{package}\">\n<!-- ... --></manifest>")
+    print("[bold blue]✅ Dummy APK yapısı oluşturuldu (örnek). Gerçek üretim için build sistemine entegre edilecek.[/bold blue]")
+
+if __name__ == "__main__":
+    app()' > ~/webvapk-boilerplate/test.txt && \
+cd ~/webvapk-boilerplate && \
+git add test.txt && \
+git commit -m "Update test.txt with apk_builder_cli.py logic" && \
+git push origin main
+
